@@ -3,6 +3,8 @@ import pandas as pd
 from datetime import datetime, timedelta
 import time
 import io
+
+# Configuración de la página
 @st.cache_data
 def cargar_eecc(archivo):
     return pd.read_excel(archivo, skiprows=7)
