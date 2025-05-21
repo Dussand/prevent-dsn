@@ -1,7 +1,15 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
+import time
+import io
+@st.cache_data
+def cargar_eecc(archivo):
+    return pd.read_excel(archivo, skiprows=7)
 
+@st.cache_data
+def cargar_metabase(archivo):
+    return pd.read_excel(archivo)
 
 st.title('Prevencion de DSN')
 st.subheader('Herramienta para la detección de DSN en EECC del banco')
@@ -13,7 +21,11 @@ archivo = st.file_uploader('Subir el EECC del banco', type = ['xlsx', 'xls'])
 
 #condicional al leer el excel
 if archivo is not None:
-    df = pd.read_excel(archivo, skiprows= 7) #se lee el excel saltando 7 filas
+    start = time.time()
+    df = cargar_eecc(archivo)
+    st.caption(f"⏱ EECC cargado en {round(time.time() - start, 2)} segundos")
+
+    #df = pd.read_excel(archivo, skiprows= 7) #se lee el excel saltando 7 filas
     df['Descripción operación'] = df['Descripción operación'].str.strip() 
     df['Nº operación'] = df['Nº operación'].astype(str).str.strip()
 
@@ -92,9 +104,15 @@ file_2_name = st.file_uploader('Subir archivo de metabaes', type = ['xlsx', 'xls
 
 if file_2_name is not None:
     # Leer los archivos Excel
-    data_2 = pd.read_excel(file_2_name)
+    start = time.time()
+    data_2 = cargar_metabase(file_2_name)
+    st.caption(f"⏱ Metabase cargado en {round(time.time() - start, 2)} segundos")
+
+    #data_2 = pd.read_excel(file_2_name)
     data_2['psp_tin'] = data_2['psp_tin'].astype(str)
     
+
+    #st.dataframe(data_2)
     # Mostrar columnas de los archivos para confirmar que las columnas 8 y 27 están disponibles
     # st.write("Columnas del archivo 1:")
     # st.write(df_filtrado.columns)
